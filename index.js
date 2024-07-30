@@ -5,21 +5,74 @@ const path = require("path");
 const { createCanvas } = require("canvas");
 const express = require("express");
 const app = require("express")();
+const nodemailer = require("nodemailer");
 
 app.use(express.json());
 
-app.post("/generate-certificate", (req, res) => {
-  generateCertificate(
-    req.body.name,req.body.usn,req.body.role,req.body.startDate
-  ).then((result) => {
-    res.json(result)
-  })
-  .catch(e => console.log(e))
+const transporter = nodemailer.createTransport({
+  service: "gmail", // or any other email service
+  auth: {
+    user: "vinayaknawdhar003@gmail.com",
+    pass: "hjxmryqcdvbckcfv",
+  },
+});
+
+app.post("/generate-certificate", async (req, res) => {
+  try{
+    const certificateBuffer = await generateCertificate(
+      req.body.name,
+      req.body.usn,
+      req.body.role,
+      req.body.startDate
+    );
+  
+    const mailOptions = {
+      from: "vinayaknawdhar003@gmail.com",
+      to: req.body.email,
+      subject: "Offer Letter - LNS FarmerInfo LLP",
+      text: `Dear ${req.body.name},
+  
+  We’re excited to extend this offer to join our team as an intern! Attached, you’ll find the official offer letter with details about your role and start date. We’re thrilled to have you on board and are confident that you’ll make valuable contributions while gaining meaningful experience.
+  
+  Please review the offer letter and let us know if you have any questions. Once you're ready to proceed, Just reply 'Confirm' to this mail.
+  
+  Welcome to the team! We look forward to working with you.
+  
+  Best regards,
+  Vinayak Nawdhar
+  LNS FarmerInfo LLP
+  +91 7727944259`,
+      attachments: [
+        {
+          filename: `offerletter_${req.body.usn}.pdf`,
+          content: Buffer.from(certificateBuffer),
+          encoding: "base64", // optional, but you can specify encoding
+        },
+      ],
+    };
+  
+    transporter.sendMail(mailOptions, (err, info) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        console.log(info);
+        resolve(info);
+      }
+    });
+  
+    res.json({message : "certificate generated and sent."});
+  }
+  catch(e){
+    console.log(e)
+  }
+  
 });
 
 app.listen(process.env.PORT, () => {
   console.log(" server is running ");
 });
+
 function generateWatermark(usn) {
   const width = 200; // Width of the image
   const height = 200; // Height of the image
