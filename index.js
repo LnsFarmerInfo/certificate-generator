@@ -12,8 +12,8 @@ app.use(express.json());
 const transporter = nodemailer.createTransport({
   service: "gmail", // or any other email service
   auth: {
-    user: "vinayaknawdhar003@gmail.com",
-    pass: "hjxmryqcdvbckcfv",
+    user: "lnsfarmerinfo@gmail.com",
+    pass: process.env.APP_PASSWORD,
   },
 });
 
@@ -27,7 +27,7 @@ app.post("/generate-certificate", async (req, res) => {
     );
   
     const mailOptions = {
-      from: "vinayaknawdhar003@gmail.com",
+      from: "lnsfarmerinfo@gmail.com",
       to: req.body.email,
       subject: "Offer Letter - LNS FarmerInfo LLP",
       text: `Dear ${req.body.name},
@@ -39,7 +39,7 @@ app.post("/generate-certificate", async (req, res) => {
   Welcome to the team! We look forward to working with you.
   
   Best regards,
-  Vinayak Nawdhar
+  Hiring Team,
   LNS FarmerInfo LLP
   +91 7727944259`,
       attachments: [
