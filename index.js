@@ -17,13 +17,40 @@ const transporter = nodemailer.createTransport({
   },
 });
 
+async function getFormattedDate() {
+  const today = new Date();
+  const day = today.getDate();
+  const month = today.toLocaleString("default", { month: "short" });
+  const year = today.getFullYear();
+
+  // Function to get the ordinal suffix
+  const getOrdinalSuffix = (day) => {
+    if (day > 3 && day < 21) return "th";
+    switch (day % 10) {
+      case 1:
+        return "st";
+      case 2:
+        return "nd";
+      case 3:
+        return "rd";
+      default:
+        return "th";
+    }
+  };
+
+  // Format the date
+  const formattedDate = `${day}${getOrdinalSuffix(day)} ${month}, ${year}`;
+  return formattedDate;
+}
+
 app.post("/generate-certificate", async (req, res) => {
   try{
     const certificateBuffer = await generateCertificate(
       req.body.name,
       req.body.usn,
       req.body.role,
-      req.body.startDate
+      req.body.startDate,
+      getFormattedDate()
     );
   
     const mailOptions = {
@@ -32,7 +59,8 @@ app.post("/generate-certificate", async (req, res) => {
       subject: "Offer Letter - LNS FarmerInfo LLP",
       text: `Dear ${req.body.name},
   
-We’re excited to extend this offer to join our team as an ${req.body.role}! Attached, you’ll find the official offer letter with details about your role and start date. We’re thrilled to have you on board and are confident that you’ll make valuable contributions while gaining meaningful experience.
+We’re excited to extend this offer to join our team as an ${req.body.role}! 
+Attached, you’ll find the official offer letter with details about your role and start date. We’re thrilled to have you on board and are confident that you’ll make valuable contributions while gaining meaningful experience.
 Please review the offer letter and let us know if you have any questions. Once you're ready to proceed, Just reply 'Confirm' to this mail.
   
   Welcome to the team! We look forward to working with you.
@@ -95,7 +123,7 @@ function generateWatermark(usn) {
   return base64Image;
 }
 
-async function generateCertificate(name, usn, position, startDate) {
+async function generateCertificate(name, usn, position, startDate,date) {
   // Load the HTML template
   const templatePath = path.join(__dirname, "offerletter.ejs");
   const template = fs.readFileSync(templatePath, "utf-8");
@@ -107,6 +135,7 @@ async function generateCertificate(name, usn, position, startDate) {
     usn: usn.toUpperCase(),
     position,
     startDate,
+    date
   });
 
   const browser = await puppeteer.launch();
