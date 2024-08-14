@@ -32,16 +32,15 @@ app.post("/generate-certificate", async (req, res) => {
       subject: "Offer Letter - LNS FarmerInfo LLP",
       text: `Dear ${req.body.name},
   
-  We’re excited to extend this offer to join our team as an intern! Attached, you’ll find the official offer letter with details about your role and start date. We’re thrilled to have you on board and are confident that you’ll make valuable contributions while gaining meaningful experience.
-  
-  Please review the offer letter and let us know if you have any questions. Once you're ready to proceed, Just reply 'Confirm' to this mail.
+We’re excited to extend this offer to join our team as an ${req.body.role}! Attached, you’ll find the official offer letter with details about your role and start date. We’re thrilled to have you on board and are confident that you’ll make valuable contributions while gaining meaningful experience.
+Please review the offer letter and let us know if you have any questions. Once you're ready to proceed, Just reply 'Confirm' to this mail.
   
   Welcome to the team! We look forward to working with you.
   
   Best regards,
   Hiring Team,
   LNS FarmerInfo LLP
-  +91 7727944259`,
+  +91 8762944259`,
       attachments: [
         {
           filename: `offerletter_${req.body.usn}.pdf`,
