@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function getFormattedDate() {
+function getFormattedDate() {
   const today = new Date();
   const day = today.getDate();
   const month = today.toLocaleString("default", { month: "short" });
